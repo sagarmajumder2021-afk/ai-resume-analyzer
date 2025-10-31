@@ -1,0 +1,47 @@
+{
+  "name": "AI Resume Analyzer",
+  "nodes": [
+    {
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "parameters": {
+        "event": "messageReceived",
+        "filters": {
+          "hasAttachment": true,
+          "subject": "resume,application"
+        }
+      }
+    },
+    {
+      "name": "Google Drive Upload",
+      "type": "n8n-nodes-base.googleDrive",
+      "parameters": {
+        "operation": "upload",
+        "folderId": "YOUR_FOLDER_ID"
+      }
+    },
+    {
+      "name": "Extract Text",
+      "type": "n8n-nodes-base.code",
+      "parameters": {
+        "jsCode": "// Extract text from file"
+      }
+    },
+    {
+      "name": "OpenAI Analysis",
+      "type": "n8n-nodes-base.openAi",
+      "parameters": {
+        "model": "gpt-4",
+        "prompt": "Analyze this resume and provide structured insights"
+      }
+    },
+    {
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "parameters": {
+        "operation": "append",
+        "sheetId": "YOUR_SHEET_ID"
+      }
+    }
+  ]
+}
