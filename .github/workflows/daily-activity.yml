@@ -1,0 +1,44 @@
+name: Daily Activity Tracker
+
+on:
+  schedule:
+    - cron: '30 14 * * *'  # 8:00 PM IST daily
+  workflow_dispatch:
+
+jobs:
+  daily-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Configure Git
+        run: |
+          git config --global user.name 'sagarmajumder2021-afk'
+          git config --global user.email 'airelatedworkuse@gmail.com'
+          
+      - name: Update Activity Log
+        run: |
+          echo "🔥 Daily activity update - $(date)" >> activity_log.txt
+          echo "✅ Keeping the streak alive!" >> activity_log.txt
+          echo "---" >> activity_log.txt
+          
+      - name: Update Stats
+        run: |
+          TOTAL_DAYS=$(grep -c "Daily activity" activity_log.txt || echo "1")
+          echo "📊 Total Active Days: $TOTAL_DAYS" > stats.txt
+          echo "📅 Last Updated: $(date)" >> stats.txt
+          echo "🎯 Goal: 200 contributions in 30 days" >> stats.txt
+          echo "💚 Status: On track!" >> stats.txt
+          
+      - name: Commit and Push
+        run: |
+          git add .
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Daily contribution update - $(date +'%Y-%m-%d')" && git push)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
